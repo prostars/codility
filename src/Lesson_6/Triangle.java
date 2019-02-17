@@ -5,7 +5,8 @@ package Lesson_6;
 
 // Triangle
 // Determine whether a triangle can be built from a given set of edges.
-// https://app.codility.com/demo/results/trainingZKGHPS-WB2/
+// https://app.codility.com/programmers/lessons/6-sorting/triangle/
+// https://app.codility.com/demo/results/trainingVCPFBZ-9B3/
 
 import java.util.Arrays;
 
@@ -44,12 +45,10 @@ public class Triangle {
   public static int solution(int[] A) {
     Arrays.sort(A);
 
-    for (int idx = 0; idx < A.length; idx++) {
-      if (idx + 2 < A.length) {
+    for (int idx = 0; idx < A.length - 2; idx++) {
         long sum = (long)A[idx] + A[idx + 1];
         if (sum > A[idx + 2])
           return 1;
-      }
     }
 
     return 0;
