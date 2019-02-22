@@ -3,15 +3,14 @@ package Lesson_6;
 // Lesson 6
 // Sorting
 
-// NumberOfDiscIntersections
+// NumberOfDiscIntersectionsWithLucainvernizzi
 // Compute the number of intersections in a sequence of discs.
 // https://app.codility.com/programmers/lessons/6-sorting/number_of_disc_intersections/
-// https://app.codility.com/demo/results/training3TTP59-TRV/
-// Performance : 62%
+// https://app.codility.com/demo/results/trainingCXZV7G-NWR/
+// Performance : 100%
 
-// http://www.lucainvernizzi.net/blog/2014/11/21/codility-beta-challenge-number-of-disc-intersections/
-
-import java.util.*;
+// reference
+// https://stackoverflow.com/a/16814894/9218101
 
 public class NumberOfDiscIntersections {
 
@@ -33,48 +32,29 @@ public class NumberOfDiscIntersections {
         System.out.printf("result = %d, pass = %b\n", result, result == 0);
     }
 
-    static public int solution(int[] A) {
-        class XPosition {
-            long x;
-            boolean start;
-
-            public XPosition(long x, boolean start) {
-                this.x = x;
-                this.start = start;
-            }
+    private static int solution(int[] A)
+    {
+        int[] startCounts = new int[A.length];
+        int[] endCounts = new int[A.length];
+        for (int x = 0, maxXPosition = A.length - 1; x < A.length; x++) {
+            int startCount = x > A[x] ? x - A[x] : 0;
+            int endCount = maxXPosition - x > A[x]? x + A[x] : maxXPosition;
+            startCounts[startCount]++;
+            endCounts[endCount]++;
         }
 
-        XPosition[] xPositions = new XPosition[A.length * 2];
-        int idx = 0;
+        int result = 0, activeDiscs = 0;
         for (int x = 0; x < A.length; x++) {
-            XPosition xStartPos = new XPosition((long)x - A[x], true);
-            xPositions[idx] = xStartPos;
-            XPosition xEndPos = new XPosition((long)x + A[x], false);
-            xPositions[idx + 1] = xEndPos;
-            idx += 2;
+            if (startCounts[x] > 0) {
+                result += activeDiscs * startCounts[x];
+                result += startCounts[x] * (startCounts[x] - 1) / 2;
+                if (10_000_000 < result)
+                    return -1;
+                activeDiscs += startCounts[x];
+            }
+            activeDiscs -= endCounts[x];
         }
 
-        Arrays.sort(xPositions, (a, b) -> {
-            if (a.x < b.x)
-                return -1;
-            else if (a.x > b.x)
-                return 1;
-            else if (!b.start)
-                return -1;
-            else
-                return 1;
-        });
-
-        int intersections = 0, actives = 0;
-        for (idx = 0; idx < xPositions.length; idx++) {
-            if (xPositions[idx].start) {
-                intersections += actives;
-                actives++;
-            } else
-                actives--;
-            if (intersections > 10_000_000)
-                return -1;
-        }
-        return intersections;
+        return result;
     }
 }
